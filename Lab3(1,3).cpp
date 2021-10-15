@@ -10,6 +10,73 @@ int pogr = 0;
 
 int choose = 0, ** Matrix3 = NULL;
 
+void Obiedinenie() {
+	cout << "Объединение матриц 1 и 2:" << endl;
+	//Объединение
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) {
+			if (Matrix1[i][m] == 0 && Matrix2[i][m] == 0) {
+				Matrix3[i][m] = 0;
+			}
+			else {
+				Matrix3[i][m] = 1;
+			}
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) {
+			cout << Matrix3[i][m] << " ";
+		}
+		cout << endl;
+	}
+}
+
+void Peresechenie() {
+	cout << "Пересечение матриц 1 и 2:" << endl;
+	//Пересечение
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) {
+			if (Matrix1[i][m] == 1 && Matrix2[i][m] == 1) {
+				Matrix3[i][m] = 1;
+			}
+			else {
+				Matrix3[i][m] = 0;
+			}
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) {
+			cout << Matrix3[i][m] << " ";
+		}
+		cout << endl;
+	}
+}
+
+void ShapeSumm() {
+	cout << "Кольцевая сумма матриц 1 и 2:" << endl;
+	//Кольцевая сумма
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) {
+			if ((Matrix1[i][m] == 0 && Matrix2[i][m] == 0) || (Matrix1[i][m] == 1 && Matrix2[i][m] == 1)) {
+				Matrix3[i][m] = 0;
+			}
+			else {
+				Matrix3[i][m] = 1;
+			}
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) {
+			cout << Matrix3[i][m] << " ";
+		}
+		cout << endl;
+	}
+
+}
+
 int main() {
 
 	setlocale(LC_ALL, "Rus");
@@ -20,6 +87,8 @@ int main() {
 	cout << "Введите размерность матриц: ";
 	cin >> n;
 
+	if (n <= 0) { cout << "\nНекорректный ввод. Повторите попытку" << endl; return 0; }
+
 	Matrix1 = (int**)calloc(n, 3);
 	Matrix2 = (int**)calloc(n, 3);
 
@@ -27,6 +96,7 @@ int main() {
 		Matrix1[j] = (int*)calloc(n, 3);
 		Matrix2[j] = (int*)calloc(n, 3);
 	}
+
 	cout.precision(3 * n);
 
 	for (int i = 0; i < n; i++) {
@@ -42,114 +112,64 @@ int main() {
 		pogr++;
 	}
 
-	cout << "\nМатрица №1:" << endl;
-	for (int i = 0; i < n; i++) {
-		for (int m = 0; m < n; m++) {
-			cout << Matrix1[i][m] << " ";
-		}
-		cout << endl;
-	}
-
-	cout << "\nМатрица №2:" << endl;
-	for (int i = 0; i < n; i++) {
-		for (int m = 0; m < n; m++) {
-			cout << Matrix2[i][m] << " ";
-		}
-		cout << endl;
-	}
-
 	//Задание 3//
 
-	cout << "\n1.Объединение" << endl;
-	cout << "2.Пересечение" << endl;
-	cout << "3.Кольцевая сумма\n" << endl;
-	cout << "Выберите операцию для выполнения: ";
-	cin >> choose;
-	cout << endl;
+	while (choose != 4) {
 
-	switch (choose) {
+		system("cls");
 
-	case 1://Объединение
-		Matrix3 = (int**)calloc(n, 3);
-
-		for (int j = 0; j < n; j++) { Matrix3[j] = (int*)calloc(n, 3); }
-		cout << "Объединение матриц 1 и 2:" << endl;
-		//Объединение
+		cout << "\nМатрица №1:" << endl;
 		for (int i = 0; i < n; i++) {
 			for (int m = 0; m < n; m++) {
-				if (Matrix1[i][m] == 0 && Matrix2[i][m] == 0) {
-					Matrix3[i][m] = 0;
-				}
-				else {
-					Matrix3[i][m] = 1;
-				}
-			}
-		}
-
-		for (int i = 0; i < n; i++) {
-			for (int m = 0; m < n; m++) {
-				cout << Matrix3[i][m] << " ";
+				cout << Matrix1[i][m] << " ";
 			}
 			cout << endl;
 		}
 
-		break;
-		
-	case 2://Пересечение
-		Matrix3 = (int**)calloc(n, 3);
-
-		for (int j = 0; j < n; j++) { Matrix3[j] = (int*)calloc(n, 3); }
-		cout << "Пересечение матриц 1 и 2:" << endl;
-		//Пересечение
+		cout << "\nМатрица №2:" << endl;
 		for (int i = 0; i < n; i++) {
 			for (int m = 0; m < n; m++) {
-				if (Matrix1[i][m] == 1 && Matrix2[i][m] == 1) {
-					Matrix3[i][m] = 1;
-				}
-				else {
-					Matrix3[i][m] = 0;
-				}
-			}
-		}
-
-		for (int i = 0; i < n; i++) {
-			for (int m = 0; m < n; m++) {
-				cout << Matrix3[i][m] << " ";
+				cout << Matrix2[i][m] << " ";
 			}
 			cout << endl;
 		}
 
-		break;
+		cout << "\n1.Объединение" << endl;
+		cout << "2.Пересечение" << endl;
+		cout << "3.Кольцевая сумма" << endl;
+		cout << "4.Выход\n" << endl;
+		cout << "Выберите операцию для выполнения: ";
+		cin >> choose;
+		cout << endl;
 
-	case 3: //Кольцевая сумма
 		Matrix3 = (int**)calloc(n, 3);
-
 		for (int j = 0; j < n; j++) { Matrix3[j] = (int*)calloc(n, 3); }
-		cout << "Кольцевая сумма матриц 1 и 2:" << endl;
-		//Кольцевая сумма
-		for (int i = 0; i < n; i++) {
-			for (int m = 0; m < n; m++) {
-				if ((Matrix1[i][m] == 0 && Matrix2[i][m] == 0) || (Matrix1[i][m] == 1 && Matrix2[i][m] == 1)) {
-					Matrix3[i][m] = 0;
-				}
-				else {
-					Matrix3[i][m] = 1;
-				}
-			}
+
+		switch (choose) {
+
+		case 1://Объединение
+			Obiedinenie();
+			_getch();
+			break;
+
+		case 2://Пересечение
+			Peresechenie();
+			_getch();
+			break;
+
+		case 3: //Кольцевая сумма
+			ShapeSumm();
+			_getch();
+			break;
+
+		case 4:
+			cout << "\nВыход из программы" << endl;
+			break;
+
+		default:
+			cout << "\nНекорректный ввод. Повторите попытку." << endl;
+			break;
 		}
-
-		for (int i = 0; i < n; i++) {
-			for (int m = 0; m < n; m++) {
-				cout << Matrix3[i][m] << " ";
-			}
-			cout << endl;
-		}
-
-		break;
-
-	default:
-		cout << "\nНекорректный ввод. Повторите попытку." << endl;
-		break;
 	}
 
 	return 0;
