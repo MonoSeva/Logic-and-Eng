@@ -1,40 +1,100 @@
 #include <iostream>
 #include <ctime>
+#include <stdio.h>
 #include <malloc.h>
 #include <conio.h>
-#include <string.h>
 
 using namespace std;
 
 int n, ** Matrix1 = NULL;
-int pogr = 0, dopo = 0;
+int pogr = 0, usrentr, usrentr2;
 
-int choose = 0, ** Matrix3 = NULL, usrentr = 0, usrentr2 = 0;
+int choose = 0, ** Matrix3 = NULL;
 
-void Otogdestvlenie() {
+//Р’РµСЂС€РёРЅР° / РЎР»РµРґ.СЌР»РµРјРµРЅС‚; РќРѕРјРµСЂ
+struct SmegnElem {
+	SmegnElem* Nextelem;
+	int num;
+};
 
-	if (n == 0) { return; } //Нельзя отождествить матрицу 1 на 1
+//РЎРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё
+struct SmegnList {
+	SmegnElem* First;
+	int Colo;
+} **SpecMatrix = NULL, ** SpecMatrixRezerve = NULL;
 
-	Matrix3 = (int**)calloc(n, 3);
-	pogr = 0;
+//РЎРѕР·РґР°РЅРёРµ СЃРїРёСЃРєР° СЃРјРµР¶РЅРѕСЃС‚Рё
+SmegnList* CreateList() {
+	SmegnList* groups = (SmegnList*)malloc(sizeof(SmegnList));
+	groups->First = NULL;
+	groups->Colo = 0;
+	return groups;
+}
 
-	for (int j = 0; j < n; j++) { Matrix3[j] = (int*)calloc(n, 3); }
+//Р”РѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РІ СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё
+void AddSmegElem(SmegnList* group, int Chis) {
+	SmegnElem* newItem = (SmegnElem*)malloc(sizeof(SmegnElem));
+	newItem->Nextelem = NULL;
+	newItem->num = Chis;
 
-	for (int i = 0; i < n; i++) {
-		for (int m = 0; m < n; m++) { Matrix3[i][m] = 2; Matrix3[m][m] = 0; }
+	if (group->Colo == 0) {                          //РџСЂРё РѕС‚СЃСѓС‚СЃС‚РІРёРё СЌР»РµРјРµРЅС‚РѕРІ Р·Р°РїРёСЃС‹РІР°РµРј РєР°Рє РїРµСЂРІС‹Р№
+		group->First = newItem;
+		group->Colo++;
+		return;
 	}
 
-	cout << "Введите номера отождествляемых вершин: \n";
-	cout << "Первая: ";
+	SmegnElem* last = group->First;                      //РџСЂРё РЅР°Р»РёС‡РёРё РґСЂСѓРіРёС… СЌР»РµРјРµРЅС‚РѕРІ РЅР°С‡РёРЅР°РµРј РїРµСЂРµР±РѕСЂ
+
+	while (last->Nextelem != NULL) {
+		last = last->Nextelem;
+	}
+	last->Nextelem = newItem;
+	group->Colo++;
+
+}
+
+//РћС‚СЂРёСЃРѕРІРєР° СЃРїРёСЃРєР° СЃРјРµР¶РЅРѕСЃС‚Рё
+void PrintSmegElem(SmegnList* groups) {
+
+
+	if (groups->Colo == 0) {                                        //РџСЂРё СЂР°Р·РјРµСЂРµ = 0, Сѓ РЅР°СЃ РЅРµС‚ РґР°РЅРЅС‹С…
+		cout << "РЎРїРёСЃРѕРє РїСѓСЃС‚" << endl;
+		return;
+	}
+
+	SmegnElem* current = groups->First;
+
+	while (current != NULL) {                                       //РџРµСЂРµР±РѕСЂ СЃС‚СЂСѓРєС‚СѓСЂС‹ РґРѕ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р°(СЃ РІС‹РІРѕРґРѕРј)
+		int value = current->num;
+		cout << value << " ";
+		current = current->Nextelem;
+	}
+	cout << endl;
+}
+
+//Р¤СѓРЅРєС†РёРё РґР»СЏ РјР°С‚СЂРёС‡РЅРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РіСЂР°С„Р°
+void Otogdestvlenie() {
+
+	if (n == 0) { return; } //РќРµР»СЊР·СЏ РѕС‚РѕР¶РґРµСЃС‚РІРёС‚СЊ РјР°С‚СЂРёС†Сѓ 1 РЅР° 1
+
+	Matrix3 = (int**)calloc(n, 3); //Р’С‹РґРµР»СЏРµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ
+	pogr = 0;
+
+	for (int j = 0; j < n; j++) { Matrix3[j] = (int*)calloc(n, 3); } //Р—Р°РїРѕР»РЅСЏРµРј РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РґРёРЅР°РјРёС‡РµСЃРєРёРјРё РјР°СЃСЃРёРІР°РјРё
+
+	for (int i = 0; i < n; i++) { for (int m = 0; m < n; m++) { Matrix3[i][m] = 2; Matrix3[m][m] = 0; } } // Р—Р°РїРѕР»РЅСЏРµРј РјР°С‚СЂРёС†Сѓ 0 Рё 2
+
+	cout << "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂР° РѕС‚РѕР¶РґРµСЃС‚РІР»СЏРµРјС‹С… РІРµСЂС€РёРЅ: \n";
+	cout << "РџРµСЂРІР°СЏ: ";
 	cin >> usrentr;
-	cout << "Вторая: ";
+	cout << "Р’С‚РѕСЂР°СЏ: ";
 	cin >> usrentr2;
 	usrentr--;
 	usrentr2--;
 
-	n++; //Возвращаем n до нормального(большего на 1) значения матрицы
+	n++; //Р’РѕР·РІСЂР°С‰Р°РµРј n РґРѕ РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ(Р±РѕР»СЊС€РµРіРѕ РЅР° 1) Р·РЅР°С‡РµРЅРёСЏ РјР°С‚СЂРёС†С‹
 
-	for (int j = 0; j < n; j++) { Matrix1[usrentr][j] = Matrix1[usrentr2][j]; Matrix1[j][usrentr] = Matrix1[usrentr2][j]; } //Цикл для переноски значений в нужную вершину
+	for (int j = 0; j < n; j++) { Matrix1[usrentr][j] = Matrix1[usrentr2][j]; Matrix1[j][usrentr] = Matrix1[usrentr2][j]; } //Р¦РёРєР» РґР»СЏ РїРµСЂРµРЅРѕСЃРєРё Р·РЅР°С‡РµРЅРёР№ РІ РЅСѓР¶РЅСѓСЋ РІРµСЂС€РёРЅСѓ
 
 	for (int i = 0; i < n; i++) {
 		for (int m = 0 + pogr; m < n; m++) {
@@ -47,7 +107,7 @@ void Otogdestvlenie() {
 	}
 	cout << endl;
 
-	n--; //Уменьшаем n для взаимодействия со старой матрицей(на n-1 и n-1)
+	n--; //РЈРјРµРЅСЊС€Р°РµРј n РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ СЃРѕ СЃС‚Р°СЂРѕР№ РјР°С‚СЂРёС†РµР№(РЅР° n-1 Рё n-1)
 
 	Matrix1 = (int**)calloc(n, 3);
 	for (int j = 0; j < n; j++) { Matrix1[j] = (int*)calloc(n, 3); }
@@ -64,7 +124,7 @@ void Otogdestvlenie() {
 
 void Stuagivanie() {
 
-	if (n == 0) { return; } //Нельзя отождествить матрицу 1 на 1
+	if (n == 0) { return; } //РќРµР»СЊР·СЏ РѕС‚РѕР¶РґРµСЃС‚РІРёС‚СЊ РјР°С‚СЂРёС†Сѓ 1 РЅР° 1
 
 	Matrix3 = (int**)calloc(n, 3);
 	pogr = 0;
@@ -76,17 +136,17 @@ void Stuagivanie() {
 		cout << endl;
 	}
 
-	cout << "Введите номера стягиваемых вершин: \n";
-	cout << "Первая: ";
+	cout << "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂР° СЃС‚СЏРіРёРІР°РµРјС‹С… РІРµСЂС€РёРЅ: \n";
+	cout << "РџРµСЂРІР°СЏ: ";
 	cin >> usrentr;
-	cout << "Вторая: ";
+	cout << "Р’С‚РѕСЂР°СЏ: ";
 	cin >> usrentr2;
 	usrentr--;
 	usrentr2--;
 
-	n++; //Возвращаем n до нормального(большего на 1) значения матрицы
+	n++; //Р’РѕР·РІСЂР°С‰Р°РµРј n РґРѕ РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ(Р±РѕР»СЊС€РµРіРѕ РЅР° 1) Р·РЅР°С‡РµРЅРёСЏ РјР°С‚СЂРёС†С‹
 
-	for (int j = 0; j < n; j++) { Matrix1[usrentr][j] = Matrix1[usrentr2][j]; Matrix1[j][usrentr] = Matrix1[usrentr2][j]; } //Цикл для переноски значений в нужную вершину
+	for (int j = 0; j < n; j++) { Matrix1[usrentr][j] = Matrix1[usrentr2][j]; Matrix1[j][usrentr] = Matrix1[usrentr2][j]; } //Р¦РёРєР» РґР»СЏ РїРµСЂРµРЅРѕСЃРєРё Р·РЅР°С‡РµРЅРёР№ РІ РЅСѓР¶РЅСѓСЋ РІРµСЂС€РёРЅСѓ
 
 	for (int i = 0; i < n; i++) {
 		for (int m = 0 + pogr; m < n; m++) {
@@ -99,7 +159,7 @@ void Stuagivanie() {
 	}
 	cout << endl;
 
-	n--; //Уменьшаем n для взаимодействия со старой матрицей(на n-1 и n-1)
+	n--; //РЈРјРµРЅСЊС€Р°РµРј n РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ СЃРѕ СЃС‚Р°СЂРѕР№ РјР°С‚СЂРёС†РµР№(РЅР° n-1 Рё n-1)
 
 	Matrix1 = (int**)calloc(n, 3);
 	for (int j = 0; j < n; j++) { Matrix1[j] = (int*)calloc(n, 3); }
@@ -118,15 +178,15 @@ void Raschep() {
 
 	Matrix3 = (int**)calloc(n, 3);
 	for (int j = 0; j < n; j++) { Matrix3[j] = (int*)calloc(n, 3); }
-	//Расширяем матрицу на одну строку и столбец
+	//Р Р°СЃС€РёСЂСЏРµРј РјР°С‚СЂРёС†Сѓ РЅР° РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ Рё СЃС‚РѕР»Р±РµС†
 
-	cout << "Введите номер вершины, которую хотите расщепить: ";
+	cout << "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РІРµСЂС€РёРЅС‹, РєРѕС‚РѕСЂСѓСЋ С…РѕС‚РёС‚Рµ СЂР°СЃС‰РµРїРёС‚СЊ: ";
 	cin >> usrentr;
 	usrentr--;
-	n--;//Уменьшаем n для взаимодействия со старой матрицей(на n-1 и n-1)
+	n--;//РЈРјРµРЅСЊС€Р°РµРј n РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ СЃРѕ СЃС‚Р°СЂРѕР№ РјР°С‚СЂРёС†РµР№(РЅР° n-1 Рё n-1)
 
-	if (usrentr > n || usrentr < 0) { cout << "\nНекорректный ввод. Повторите попытку." << endl; return; }
-	//Ограничиваем ввод пользователя
+	if (usrentr > n || usrentr < 0) { cout << "\nРќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РІРІРѕРґ. РџРѕРІС‚РѕСЂРёС‚Рµ РїРѕРїС‹С‚РєСѓ." << endl; return; }
+	//РћРіСЂР°РЅРёС‡РёРІР°РµРј РІРІРѕРґ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
 	for (int i = 0; i < n; i++) {
 		for (int m = 0; m < n; m++) {
@@ -137,9 +197,9 @@ void Raschep() {
 
 	Matrix3[usrentr][n] = 1;
 	Matrix3[n][usrentr] = 1;
-	//У расщепляемых вершин должно быть соединяющее ребро
+	//РЈ СЂР°СЃС‰РµРїР»СЏРµРјС‹С… РІРµСЂС€РёРЅ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ СЃРѕРµРґРёРЅСЏСЋС‰РµРµ СЂРµР±СЂРѕ
 
-	n++; //Возвращаем n до нормального(большего на 1) значения матрицы
+	n++; //Р’РѕР·РІСЂР°С‰Р°РµРј n РґРѕ РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ(Р±РѕР»СЊС€РµРіРѕ РЅР° 1) Р·РЅР°С‡РµРЅРёСЏ РјР°С‚СЂРёС†С‹
 	Matrix1 = (int**)calloc(n, 3);
 	for (int j = 0; j < n; j++) { Matrix1[j] = (int*)calloc(n, 3); }
 
@@ -151,23 +211,205 @@ void Raschep() {
 		}
 		cout << endl;
 	}
-	cout << "\nВершина " << usrentr + 1 << " была расщеплена в вершину " << n << endl;
+	cout << "\nР’РµСЂС€РёРЅР° " << usrentr + 1 << " Р±С‹Р»Р° СЂР°СЃС‰РµРїР»РµРЅР° РІ РІРµСЂС€РёРЅСѓ " << n << endl;
 }
+
+//Р¤СѓРЅРєС†РёРё РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РіСЂР°С„Р° СЃРїРёСЃРєР°РјРё СЃРјРµР¶РЅРѕСЃС‚Рё
+
+void OtogdestvlenieSmegn() {
+
+	SpecMatrixRezerve = (SmegnList**)calloc(n, sizeof(SmegnList**));
+
+	SmegnElem* Actual = SpecMatrix[usrentr2]->First->Nextelem;
+	SmegnElem* Fresh = SpecMatrix[usrentr]->First;
+
+	bool Check = false;
+	int Dopo = 0;
+
+	usrentr2++;
+
+
+	while (Actual != NULL) {
+
+		Check = false;
+		Fresh = SpecMatrix[usrentr]->First;
+
+		while (Fresh != NULL) {
+			if (Fresh->num == Actual->num) { Check = true; }
+			Fresh = Fresh->Nextelem;
+		}
+
+		if (Check != true) {
+			AddSmegElem(SpecMatrix[usrentr], Actual->num);
+			AddSmegElem(SpecMatrix[Actual->num - 1], usrentr + 1);
+		}
+
+		Actual = Actual->Nextelem;
+	}
+
+	_getch();
+	cout << "\nEtap 1" << endl;
+	for (int i = 0; i < n + 1; i++) { PrintSmegElem(SpecMatrix[i]); }
+
+	for (int i = 0; i < n + 1; i++) {
+		Actual = SpecMatrix[i]->First->Nextelem;
+		Fresh = SpecMatrix[i]->First;
+
+		while (Actual != NULL) {
+
+			if (Actual->Nextelem == NULL && Actual->num == usrentr2) { Fresh->Nextelem = NULL; }
+			if (Actual->num == usrentr2 && Actual->Nextelem != NULL) { Fresh->Nextelem = Actual->Nextelem; }
+			Fresh = Actual;
+			Actual = Actual->Nextelem;
+		}
+	}
+
+	_getch();
+	cout << "\nEtap 2: " << usrentr2 << endl;
+	for (int i = 0; i < n + 1; i++) { PrintSmegElem(SpecMatrix[i]); }
+
+	for (int i = 0; i < n; i++) {
+		if (SpecMatrix[Dopo]->First->num == usrentr2) { Dopo++; }
+		SpecMatrixRezerve[i] = SpecMatrix[Dopo]; Dopo++;
+	}
+
+	_getch();
+	cout << "\nEtap 3" << endl;
+	for (int i = 0; i < n + 1; i++) { PrintSmegElem(SpecMatrix[i]); }
+	cout << endl;
+	for (int i = 0; i < n; i++) { PrintSmegElem(SpecMatrixRezerve[i]); }
+
+	SpecMatrix = (SmegnList**)calloc(n, sizeof(SmegnList**));
+	SpecMatrix = SpecMatrixRezerve;
+
+	cout << endl;
+	for (int i = 0; i < n; i++) { PrintSmegElem(SpecMatrix[i]); }
+}
+
+void StuagivanieSmegn() {
+
+	SpecMatrixRezerve = (SmegnList**)calloc(n, sizeof(SmegnList**));
+
+	SmegnElem* Actual = SpecMatrix[usrentr2]->First->Nextelem;
+	SmegnElem* Fresh = SpecMatrix[usrentr]->First;
+
+	bool Check = false;
+	int Dopo = 0;
+
+	usrentr2++;
+
+
+	while (Actual != NULL) {
+
+		Check = false;
+		Fresh = SpecMatrix[usrentr]->First;
+
+		while (Fresh != NULL) {
+			if (Fresh->num == Actual->num) { Check = true; }
+			Fresh = Fresh->Nextelem;
+		}
+
+		if (Check != true) {
+			AddSmegElem(SpecMatrix[usrentr], Actual->num);
+			AddSmegElem(SpecMatrix[Actual->num - 1], usrentr + 1);
+		}
+
+		Actual = Actual->Nextelem;
+	}
+
+	_getch();
+	cout << "\nEtap 1" << endl;
+	for (int i = 0; i < n + 1; i++) { PrintSmegElem(SpecMatrix[i]); }
+
+	for (int i = 0; i < n + 1; i++) {
+		Actual = SpecMatrix[i]->First->Nextelem;
+		Fresh = SpecMatrix[i]->First;
+
+		while (Actual != NULL) {
+
+			if (Actual->Nextelem == NULL && Actual->num == usrentr2) { Fresh->Nextelem = NULL; }
+			if (Actual->num == usrentr2 && Actual->Nextelem != NULL) { Fresh->Nextelem = Actual->Nextelem; }
+			Fresh = Actual;
+			Actual = Actual->Nextelem;
+		}
+	}
+
+	_getch();
+	cout << "\nEtap 2: " << usrentr2 << endl;
+	for (int i = 0; i < n + 1; i++) { PrintSmegElem(SpecMatrix[i]); }
+
+	for (int i = 0; i < n; i++) {
+		if (SpecMatrix[Dopo]->First->num == usrentr2) { Dopo++; }
+		SpecMatrixRezerve[i] = SpecMatrix[Dopo]; Dopo++;
+	}
+
+	_getch();
+	cout << "\nEtap 3" << endl;
+	for (int i = 0; i < n + 1; i++) { PrintSmegElem(SpecMatrix[i]); }
+	cout << endl;
+	for (int i = 0; i < n; i++) { PrintSmegElem(SpecMatrixRezerve[i]); }
+
+	SpecMatrix = (SmegnList**)calloc(n, sizeof(SmegnList**));
+	SpecMatrix = SpecMatrixRezerve;
+
+	cout << endl;
+	for (int i = 0; i < n; i++) { PrintSmegElem(SpecMatrix[i]); }
+}
+
+void RaschepSmegn() {
+
+	SpecMatrixRezerve = (SmegnList**)calloc(n, sizeof(SmegnList**));
+
+	int Save = 0;
+
+	/*cout << "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РІРµСЂС€РёРЅС‹, РєРѕС‚РѕСЂСѓСЋ С…РѕС‚РёС‚Рµ СЂР°СЃС‰РµРїРёС‚СЊ: ";      //Р Р°Р·Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РїСЂРё РѕРґРёРЅРѕС‡РЅРѕРј РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё(Р±РµР· РјР°С‚СЂРёС‡РЅРѕР№ С„СѓРЅРєС†РёРё)
+	cin >> usrentr;
+	usrentr--;*/
+
+	SmegnElem* Actual = SpecMatrix[usrentr]->First;
+
+	SpecMatrixRezerve = SpecMatrix;
+
+	SpecMatrixRezerve[n - 1] = CreateList();
+	AddSmegElem(SpecMatrixRezerve[n - 1], n);
+
+	while (Actual != NULL) {
+		if (Actual->num != n) {
+			AddSmegElem(SpecMatrixRezerve[n - 1], Actual->num);
+			AddSmegElem(SpecMatrixRezerve[Actual->num - 1], n);
+		}
+		Actual = Actual->Nextelem;
+	}
+
+	SpecMatrix = (SmegnList**)calloc(n, sizeof(SmegnList**));
+	SpecMatrix = SpecMatrixRezerve;
+
+	cout << endl;
+	for (int i = 0; i < n; i++) { PrintSmegElem(SpecMatrix[i]); }
+}
+
 
 int main() {
 
 	setlocale(LC_ALL, "Rus");
 	srand(time(0));
 
-	//Задание 1//
+	//Р—Р°РґР°РЅРёРµ 1//
 
-	cout << "Введите размерность матрицы: ";
+	cout << "Р’РІРµРґРёС‚Рµ СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РјР°С‚СЂРёС†: ";
 	cin >> n;
 
-	if (n <= 0) { cout << "\nНекорректный ввод. Повторите попытку.\n"; return 0; } //Ограничитель на ввод
+	if (n <= 0) { cout << "\nРќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РІРІРѕРґ. РџРѕРІС‚РѕСЂРёС‚Рµ РїРѕРїС‹С‚РєСѓ" << endl; return 0; }
 
 	Matrix1 = (int**)calloc(n, 3);
-	for (int j = 0; j < n; j++) { Matrix1[j] = (int*)calloc(n, 3); }
+	SpecMatrix = (SmegnList**)calloc(n, sizeof(SmegnList**));
+
+	for (int j = 0; j < n; j++) {
+		Matrix1[j] = (int*)calloc(n, 3);
+		SpecMatrix[j] = CreateList();  //РЎРѕР·РґР°С‘Рј СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё
+		AddSmegElem(SpecMatrix[j], j + 1); //Р’СЃС‚Р°РІР»СЏРµРј РІ РЅР°С‡Р°Р»Рѕ РєР°Р¶РґРѕРіРѕ СЃРїРёСЃРєР° СЃРјРµР¶РЅРѕСЃС‚Рё РЅРѕРјРµСЂ РѕС‚РІРµС‡Р°СЋС‰РµР№ РІРµСЂС€РёРЅС‹
+	}
+
 	cout.precision(3 * n);
 
 	for (int i = 0; i < n; i++) {
@@ -179,54 +421,67 @@ int main() {
 		pogr++;
 	}
 
-	//Задание 2//
+	for (int i = 0; i < n; i++) {
+		for (int m = 0; m < n; m++) { if (Matrix1[i][m] == 1) { AddSmegElem(SpecMatrix[i], m + 1); } }
+	}
+
+	//Р—Р°РґР°РЅРёРµ 3//
 
 	while (choose != 4) {
 
 		system("cls");
 
-		cout << "\nМатрица №1:" << endl;
+		cout << "\nРњР°С‚СЂРёС†Р° в„–1:" << endl;
 		for (int i = 0; i < n; i++) {
-			for (int m = 0; m < n; m++) { cout << Matrix1[i][m] << " "; }
+			for (int m = 0; m < n; m++) {
+				cout << Matrix1[i][m] << " ";
+			}
 			cout << endl;
 		}
 
-		cout << "\n1.Отождествить вершины" << endl;
-		cout << "2.Стянуть рёбра" << endl;
-		cout << "3.Расщепление вершины" << endl;
-		cout << "4.Выход\n" << endl;
-		cout << "\nВыберите операцию для выполнения: ";
+		cout << "\nРЎРїРёСЃРєРё СЃРјРµР¶РЅРѕСЃС‚Рё РґР»СЏ РњР°СЂС‚РёС†С‹ в„–1:" << endl;
+		for (int i = 0; i < n; i++) { PrintSmegElem(SpecMatrix[i]); }
+
+		cout << "\n1.РћС‚РѕР¶РґРµСЃС‚РІРёС‚СЊ РІРµСЂС€РёРЅС‹" << endl;
+		cout << "2.РЎС‚СЏРЅСѓС‚СЊ СЂС‘Р±СЂР°" << endl;
+		cout << "3.Р Р°СЃС‰РµРїР»РµРЅРёРµ РІРµСЂС€РёРЅС‹" << endl;
+		cout << "4.Р’С‹С…РѕРґ" << endl;
+		cout << "\nР’С‹Р±РµСЂРёС‚Рµ РѕРїРµСЂР°С†РёСЋ РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ: ";
 
 		cin >> choose;
 
 		switch (choose) {
 
-		case 1://Отождествление вершин
+		case 1://РћС‚РѕР¶РґРµСЃС‚РІР»РµРЅРёРµ РІРµСЂС€РёРЅ
 			n--;
 			Otogdestvlenie();
+			OtogdestvlenieSmegn();
 			_getch();
 			break;
 
-		case 2://Стягивание ребра
+		case 2://РЎС‚СЏРіРёРІР°РЅРёРµ СЂРµР±СЂР°
 			n--;
 			Stuagivanie();
+			StuagivanieSmegn();
 			_getch();
 			break;
 
-		case 3: //Расщепление вершины
+		case 3://Р Р°СЃС‰РµРїР»РµРЅРёРµ РІРµСЂС€РёРЅС‹
 			n++;
 			Raschep();
+			RaschepSmegn();
 			_getch();
 			break;
 
-		case 4:
-			cout << "\nВыход из программы." << endl;
+		case 4://Р’С‹С…РѕРґ РёР· С†РёРєР»Р°
+			cout << "\nР’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹." << endl;
 			break;
 
 		default:
-			cout << "\nНекорректный ввод. Повторите попытку." << endl;
+			cout << "\nРќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РІРІРѕРґ. РџРѕРІС‚РѕСЂРёС‚Рµ РїРѕРїС‹С‚РєСѓ." << endl;
 			break;
 		}
 	}
+
 	return 0;
 }
